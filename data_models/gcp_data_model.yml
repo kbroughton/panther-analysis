@@ -16,3 +16,7 @@ Mappings:
     Path: $.protoPayload.requestMetadata.callerIP
   - Name: user
     Method: get_modified_users
+  - Name: resource
+    Path: get_resource_tags
+  - Name: action
+    Path: $.protoPayload.methodName

@@ -4,6 +4,7 @@ from fnmatch import fnmatch
 import panther_event_type_helpers as event_type
 from panther_base_helpers import get_binding_deltas
 from panther_analysis_tool.enriched_event import PantherEvent
+from panther_base_helpers import deep_get
 
 ADMIN_ROLES = {
     # Primitive Rolesx
@@ -47,3 +48,23 @@ def get_iam_roles(event):
     roles_assigned = get_admin_map(event)
 
     return json.dumps(list(roles_assigned.keys()), default=PantherEvent.json_encoder)
+
+def get_resource_tags(event):
+    """
+    Returns a list of resource tags like pod, cluster, namespace
+
+    Suppressions could allow exceptions for if a string matches any tag
+    """
+    resource_tags = []
+    for path in [
+        ['resource', 'labels', 'cluster_name'],
+        ['resource','labels','pod_name'],
+        ['resource','labels','container_name'],
+        ['resource','labels','location'],
+        ['resource','type']
+        ]:
+        value = deep_get(event, *path)
+        if value:
+            resource_tags.append(value)
+    
+    return resource_tags
